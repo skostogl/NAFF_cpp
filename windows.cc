@@ -183,7 +183,6 @@ std::vector<std::complex<double>> taylor_window(const size_t N, const double SLL
   return out;
 }
 
-
 std::vector<std::complex<double>> no_window(const size_t N, const double param = 0) {
   std::vector<std::complex<double>> out;
   for (size_t i = 0; i < N; i++){

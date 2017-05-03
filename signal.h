@@ -121,9 +121,24 @@ std::ostream& operator <<(std::ostream& , ComponentVector);
 
 std::ostream& operator <<(std::ostream&, Component);
 
-
 void write_file (const std::string&, const std::vector<std::complex<double>>&, const double&, const double&, const double&) ;
 
 void write_file_merit (const std::string&, const std::function<double(double)>&, const double& , const double&, const double&);
   
 size_t multiple_of_six(std::vector<double>&);
+
+class Print_opt {
+  public:
+    enum {All = 0, Debug, Info};
+    static void Write(int level, std::string message);
+    static void SetLevel(int level);
+  protected:
+    static void Initialised();
+    static void Init();
+  private:
+    Print_opt();
+    static bool InitialisedM;
+    static int levelM;
+};
+
+

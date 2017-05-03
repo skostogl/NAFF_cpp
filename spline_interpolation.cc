@@ -8,14 +8,6 @@
 #include <cmath>
 #include <math.h>
 
-void solve(double& k0, double &k1, double &k2, const float&a,const float&b,const float&c,const float&d,const float&l,const float&m,const float&n,const float&k,const float&p,const float&q,const float&r, const float&s)
-{
- float D = (a*m*r+b*p*n+c*l*q)-(a*n*q+b*l*r+c*m*p);
- k0 = ((b*r*k+c*m*s+d*n*q)-(b*n*s+c*q*k+d*m*r))/D;
- k1 = ((a*n*s+c*p*k+d*l*r)-(a*r*k+c*l*s+d*n*p))/D;
- k2 = ((a*q*k+b*l*s+d*m*p)-(a*m*s+b*p*k+d*l*q))/D;
-}
-
 std::complex<double> spline (const double& t, const std::vector<std::complex<double>>& data) {
   double a11, a12, a21, a22, a23, a32, a33, b1, b2, b3, k0, k1, k2, a_2, b_2, x0, y0, x1, y1, x2, y2;
   //if ((t>1) && t<data.size()-1){
@@ -36,7 +28,10 @@ std::complex<double> spline (const double& t, const std::vector<std::complex<dou
   b2 = 3.0*((y1-y0)/pow((x1-x0),2)+(y2-y1)/pow((x2-x1),2));
   b3 = 3.0*((y2-y1)/pow((x2-x1),2));
   size_t ccounter=0;
-  solve(k0, k1, k2, a11, a12, 0.0, -b1, a21, a22 , a23, -b2, 0.0, a32, a33, -b3);
+  double D = (a11*a22*a33)-(a11*a23*a32+a12*a21*a33);
+  k0 =((-a12*a33*b2 - b1*a23*a32)-(-a12*a23*b3 - b1*a22*a33) )/D;
+  k1 =((-a11*a23*b3 -b1*a21*a33) - (-a11*a33*b2))/D;
+  k2 = ((-a11*a32*b2 - a12*a21*b3) - (-a11*a22*b3 - b1*a21*a32))/D;
   a_2 =  k1*(x2-x1)-(y2-y1);
   b_2 = -k2*(x2-x1)+(y2-y1);
   auto q2 = [&x1,&x2,&y1,&y2,&a_2,&b_2,&ccounter](double x) {

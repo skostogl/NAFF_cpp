@@ -2,56 +2,15 @@
 
 #include <fftw3.h>
 #include <boost/math/tools/minima.hpp>
+
+#include "signal.h"
 #include "windows.h"
 #include "spline_interpolation.h"
-#include "signal.h"
 
 typedef double Tfloat;
+const std::complex<double> z (0,1);
 typedef std::vector<double> double_vec;
 typedef std::vector<std::complex<double>> complex_vec;
-const std::complex<double> z (0,1);
-
-class Print_opt {
-  public:
-    enum {All = 0, Debug, Info};
-    static void Write(int level, std::string message);
-    static void SetLevel(int level);
-  protected:
-    static void Initialised();
-    static void Init();
-  private:
-    Print_opt();
-    static bool InitialisedM;
-    static int levelM;
-};
-
-bool Print_opt::InitialisedM;
-int Print_opt::levelM;
-
-void Print_opt::Write(int level, std::string message){
-  Initialised();
-  if (level >= levelM) {
-    std::cout<<message<<std::endl;
-  }
-}
-
-void Print_opt::SetLevel(int level) {
-  levelM = level;
-  InitialisedM = true;
-}
-
-void Print_opt::Initialised() {
-  if (!InitialisedM) {
-    Init();
-  }
-}
-
-void Print_opt::Init() {
-  int default_level(Print_opt::All);
-  SetLevel(default_level);
-}
-
-
 
 class NAFF {
   private:
@@ -163,7 +122,6 @@ class NAFF {
     norm_vectors.push_back(u_i);
   }
 
-
   ///////////////////// Modified Gram Schmidt 
   /*void subtract_frequency(Signal& signal, double& frequency) {
     Component v_i(frequency, signal.size());
@@ -180,8 +138,6 @@ class NAFF {
     signal -= u_i;
     norm_vectors.push_back(u_i);
   }*/
-
-
 
   ////////////////////// Keep frequency which results in the minimum RMS in time domain
   double minimize_RMS_time () {

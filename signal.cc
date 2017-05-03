@@ -1,8 +1,6 @@
 #include "signal.h"
 #include "windows.h"
 
-size_t ncounter=0;
-
 template <typename T1, typename T2>
 std::complex<double> inner_product(const T1& t1, const T2& t2, const WindowFunc & window_func, const bool& interpolation) {
   if ( t1.size() != t2.size()) throw std::runtime_error("Inner product sizes not equal!");
@@ -38,19 +36,19 @@ std::complex<double> inner_product(const T1& t1, const T2& t2, const WindowFunc 
   }
 }
 
-
 template std::complex<double>  inner_product<Component, ComponentVector>(const Component&, const ComponentVector&, const WindowFunc&, const bool&);
 template std::complex<double>  inner_product<Signal, Component>(const Signal&, const Component&, const WindowFunc&, const bool&);
 template std::complex<double>  inner_product<Signal, ComponentVector>(const Signal&, const ComponentVector&, const WindowFunc&, const bool&);
 
-ComponentVector projection (const Component& v, const ComponentVector& u, const WindowFunc & window_func, const bool& interpolation ){
+ComponentVector projection (const Component& v, const ComponentVector& u, const WindowFunc & window_func, const bool& interpolation){
   std::complex<double> num = inner_product(v, u, window_func, interpolation);
   std::complex<double> den = inner_product(u, u ,window_func, interpolation);
   ComponentVector s = v;
   s.ampl *= num/den;
   return s;
 }
-ComponentVector projection (const ComponentVector& v, const ComponentVector& u, const WindowFunc & window_func, const bool& interpolation ){
+
+ComponentVector projection (const ComponentVector& v, const ComponentVector& u, const WindowFunc & window_func, const bool& interpolation){
   std::complex<double> num = inner_product(v, u, window_func, interpolation);
   std::complex<double> den = inner_product(u, u ,window_func, interpolation);
   ComponentVector s = v;
@@ -114,3 +112,30 @@ size_t multiple_of_six (std::vector<double>& data) {
   }
   return new_size;
 }
+
+bool Print_opt::InitialisedM;
+int Print_opt::levelM;
+
+void Print_opt::Write(int level, std::string message){
+  Initialised();
+  if (level >= levelM) {
+    std::cout<<message<<std::endl;
+  }
+}
+
+void Print_opt::SetLevel(int level) {
+  levelM = level;
+  InitialisedM = true;
+}
+
+void Print_opt::Initialised() {
+  if (!InitialisedM) {
+    Init();
+  }
+}
+
+void Print_opt::Init() {
+  int default_level(Print_opt::All);
+  SetLevel(default_level);
+}
+
