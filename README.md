@@ -1,4 +1,4 @@
-rm -r build/*
-cd build
-cmake ..
-make
+rm -r build/* ,
+cd build ,
+cmake .. ,
+make 
