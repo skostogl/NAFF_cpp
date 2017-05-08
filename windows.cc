@@ -113,17 +113,22 @@ std::complex<double> WindowFunc::operator()(size_t t, size_t N) const {
   return window[t];
 } 
 
-
 std::vector<std::complex<double>> taylor_window(const size_t N, const double SLL) {
   std::vector<std::complex<double>> out;
   std::vector<double> ww(N);
   double A = acosh(pow(10, SLL)) / pi;
   double NBAR = boost::math::round((2 * pow(A, 2) + 0.5)+0.5);
 
-  auto calculateFm = [] (int m, double sp2, double a, int nBar) {
-    int n[nBar - 1][1], p[nBar - 1][1];
-    double Num[nBar - 1][1], Den[nBar - 1][1], Fm[nBar - 1][1], prodNum = 1,
-    prodDen = 1, prodFm = 0.0;
+  //auto calculateFm = [] (int m, double sp2, double a, int nBar) {
+  auto calculateFm = [] (size_t m, double sp2, double a, size_t nBar) {
+    std::vector<std::vector<int>> n(nBar-1,std::vector<int>(1,0));
+    std::vector<std::vector<int>> p(nBar-1,std::vector<int>(1,0));
+    //int n[nBar - 1][1], p[nBar - 1][1];
+    std::vector<std::vector<double>> Num(nBar-1,std::vector<double>(1,0));
+    std::vector<std::vector<double>> Den(nBar-1,std::vector<double>(1,0));
+    std::vector<std::vector<double>> Fm(nBar-1,std::vector<double>(1,0));
+    double prodNum = 1, prodDen = 1, prodFm = 0.0;
+    //double Num[nBar - 1][1], Den[nBar - 1][1], Fm[nBar - 1][1], prodNum = 1, prodDen = 1, prodFm = 0.0;
     for (size_t i = 0; i < nBar - 1; i++) {
       for (size_t j = 0; j < 1; j++) {
         n[i][j] = i + 1;
@@ -183,8 +188,10 @@ std::vector<std::complex<double>> taylor_window(const size_t N, const double SLL
   return out;
 }
 
-std::vector<std::complex<double>> no_window(const size_t N, const double param = 0) {
+std::vector<std::complex<double>> no_window(const size_t N, const double param) {
   std::vector<std::complex<double>> out;
+  std::string message = "No window " +std::to_string(param);
+  Print_opt::Write(Print_opt::Debug,message);
   for (size_t i = 0; i < N; i++){
     out.emplace_back(1.,0.);
   }

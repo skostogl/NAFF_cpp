@@ -9,7 +9,8 @@
 #include <math.h>
 
 std::complex<double> spline (const double& t, const std::vector<std::complex<double>>& data) {
-  double a11, a12, a21, a22, a23, a32, a33, b1, b2, b3, k0, k1, k2, a_2, b_2, x0, y0, x1, y1, x2, y2;
+  //double a11, a12, a21, a22, a23, a32, a33, b1, b2, b3, k0, k1, k2, a_2, b_2, x0, y0, x1, y1, x2, y2;
+  double a11, a12, a21, a22, a23, a32, a33, b1, b2, b3, k1, k2, a_2, b_2, x0, y0, x1, y1, x2, y2;
   //if ((t>1) && t<data.size()-1){
   x0 = (int)(t)-1;
   y0 = data[x0].real();
@@ -29,7 +30,7 @@ std::complex<double> spline (const double& t, const std::vector<std::complex<dou
   b3 = 3.0*((y2-y1)/pow((x2-x1),2));
   size_t ccounter=0;
   double D = (a11*a22*a33)-(a11*a23*a32+a12*a21*a33);
-  k0 =((-a12*a33*b2 - b1*a23*a32)-(-a12*a23*b3 - b1*a22*a33) )/D;
+  //k0 =((-a12*a33*b2 - b1*a23*a32)-(-a12*a23*b3 - b1*a22*a33) )/D;
   k1 =((-a11*a23*b3 -b1*a21*a33) - (-a11*a33*b2))/D;
   k2 = ((-a11*a32*b2 - a12*a21*b3) - (-a11*a22*b3 - b1*a21*a32))/D;
   a_2 =  k1*(x2-x1)-(y2-y1);

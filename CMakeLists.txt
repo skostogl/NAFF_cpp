@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.7.2)
 project(NAFF)
 
-set(CXX_FLAGS "-fPIC")
-set(CXX_OPT "-std=c++14 -O3 -Wall -Wextra -pedantic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
+add_compile_options(-std=c++11 -O3 -Wall -Wextra -pedantic)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
 file(GLOB HEADER_FILES "*.h")
 file(GLOB SOURCE_FILES "*.cc")
@@ -47,4 +46,6 @@ target_link_libraries(NAFF
 	${PYTHON_LIBRARIES} 
 	${FFTW3_LIBRARIES}
 )
-set_target_properties(NAFF PROPERTIES PREFIX "")
+set_target_properties(NAFF PROPERTIES PREFIX ""
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
