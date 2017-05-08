@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.7.2)
 project(NAFF)
 
-add_compile_options(-std=c++11 -O3 -Wall -Wextra -pedantic)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
-#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
-
+#add_compile_options(-std=c++11 -O3 -Wall -Wextra -pedantic)
+add_compile_options(-O3 -Wall -Wextra -pedantic)
 file(GLOB HEADER_FILES "*.h")
 file(GLOB SOURCE_FILES "*.cc")
 

@@ -1,3 +1,0 @@
-/home/skostog/cernbox/NAFF_May_2017/NAFF/build/CMakeFiles/rebuild_cache.dir
-/home/skostog/cernbox/NAFF_May_2017/NAFF/build/CMakeFiles/edit_cache.dir
-/home/skostog/cernbox/NAFF_May_2017/NAFF/build/CMakeFiles/NAFF.dir
