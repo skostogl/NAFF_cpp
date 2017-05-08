@@ -27,7 +27,7 @@ for p in xrange(6, 500, 6):
   naff = NAFF()
   naff.set_window_parameter(1,'h')
   naff.set_interpolation(True)
-  naff.set_upsampling(True,'spline')
+  #naff.set_upsampling(True,'spline')
   #naff.set_merit_function("minimize_RMS_frequency")
   tune=(naff.get_f1(coord,zero))
   for k in tune:

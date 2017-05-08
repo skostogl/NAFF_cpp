@@ -15,7 +15,7 @@ naff = NAFF()
 naff.fmax=1
 naff.set_window_parameter(0, 'n')
 naff.set_interpolation(True)
-naff.set_upsampling(True, 'spline')
+#naff.set_upsampling(True, 'spline')
 tune_all=naff.get_f(coord,zero)
 counter = 0
 for i in tune_all:
