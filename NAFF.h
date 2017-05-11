@@ -54,21 +54,29 @@ class NAFF {
   }
   //////// Fast Fourier Transform
   void FFTw () {
-    std::vector<fftw_complex> fftw_(signal.size());
-    fftw_plan_ = fftw_plan_dft_1d(signal.size(), reinterpret_cast<fftw_complex*>(&signal.data[0]), fftw_.data(), FFTW_FORWARD, FFTW_ESTIMATE);
+    //std::vector<fftw_complex> fftw_(signal.size());
+    std::vector<std::pair<double, double>> fftw_(signal.size());
+    fftw_plan_ = fftw_plan_dft_1d(signal.size(), 
+                   reinterpret_cast<fftw_complex*>(&signal.data[0]), 
+                   reinterpret_cast<fftw_complex*>(fftw_.data()),
+                   FFTW_FORWARD, FFTW_ESTIMATE);
+    //fftw_plan_ = fftw_plan_dft_1d(signal.size(), reinterpret_cast< std::pair<double,double>*>(&signal.data[0]), fftw_.data(), FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(fftw_plan_);
     fft_size = fftw_.size();
     max_fft_frequency(fftw_);
   }
   
   //////// First estimation of the peak frequency from FFT 
-  void max_fft_frequency (std::vector<fftw_complex> &fftw_) {
+  //void max_fft_frequency (std::vector<fftw_complex> &fftw_) {
+  void max_fft_frequency (std::vector<std::pair<double,double>> &fftw_) {
     double_vec amps;
-    double max_amplitude = sqrt(fftw_[0][0]*fftw_[0][0]+fftw_[0][1]*fftw_[0][1]);
+    //double max_amplitude = sqrt(fftw_[0][0]*fftw_[0][0]+fftw_[0][1]*fftw_[0][1]);
+    double max_amplitude = sqrt(fftw_[0].first*fftw_[0].first+fftw_[0].second*fftw_[0].second);
     amps.push_back(max_amplitude);
     max_index = 0.0;
     for (size_t i=1; 2*i<fft_size; i++ ) {
-      const double current_amplitude = sqrt(fftw_[i][0]*fftw_[i][0]+fftw_[i][1]*fftw_[i][1]);
+      //const double current_amplitude = sqrt(fftw_[i][0]*fftw_[i][0]+fftw_[i][1]*fftw_[i][1]);
+      const double current_amplitude = sqrt(fftw_[i].first*fftw_[i].first+fftw_[i].second*fftw_[i].second);
       amps.push_back(current_amplitude);
       if (current_amplitude > max_amplitude) {
         max_amplitude = current_amplitude;
