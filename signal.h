@@ -81,12 +81,13 @@ class Signal {
     }    
 
     std::complex<double> operator[] (double t) const {
-      ///////////// Linear interpolation of data	    
-      //size_t a = (int)(t);
-      //size_t b = (int)(t)+1;
-      //return data[a]+(data[b]-data[a])*(t-a)/(1.0*(b-a));
-      ///////////// Spline interpolation of data	    
       return spline(t, data);
+     }
+
+    std::complex<double> operator() (double t) const {
+      size_t a = (int)(t);
+      size_t b = (int)(t)+1;
+      return data[a]+(data[b]-data[a])*(t-a)/(1.0*(b-a));
      }
            
     size_t size() const{
@@ -122,6 +123,7 @@ std::ostream& operator <<(std::ostream& , ComponentVector);
 std::ostream& operator <<(std::ostream&, Component);
 
 void write_file (const std::string&, const std::vector<std::complex<double>>&, const double&, const double&, const double&) ;
+void write_fft (const std::string&,const std::vector<double>&, const std::vector<double>&, const double&, const double&, const double&) ;
 
 void write_file_merit (const std::string&, const std::function<double(double)>&, const double& , const double&, const double&);
   

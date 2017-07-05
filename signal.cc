@@ -92,6 +92,13 @@ void write_file (const std::string& file_name, const std::vector<std::complex<do
     myfile<<std::setprecision(15)<<var1[i].real()<<" "<<std::setprecision(15)<<var1[i].imag()<<std::endl;
   }
 }
+void write_fft (const std::string& file_name, const std::vector<double>& var0,const std::vector<double>& var1 ,const double& min, const double& max, const double& step ) {
+  std::ofstream myfile;
+  myfile.open(file_name);
+  for (double i=min; i<max; i+=step) {
+    myfile<<std::setprecision(15)<<var0[i]<<" "<<var1[i]<<" "<<std::endl;
+  }
+}
 
 void write_file_merit (const std::string& file_name, const std::function<double(double)>& y,const double& min, const double& max, const double& step ) {
   std::ofstream myfile;

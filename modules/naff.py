@@ -5,52 +5,31 @@ from decimal import *
 import math
 
 
-def naff(data, coord, coord_prime=0, second_half =False):
-  tunes=[]
-  n_particles = len(data[0].x)
-  t0 = time.clock()
-  for i in range (n_particles):
-    print "Particle ",i
-    naff = NAFF()
-    naff.fmax = 1
-    naff.set_window_parameter(1,'h')
-    tune=naff.get_f1(coord(data,i),coord_prime(data,i))
-    for j in (tune):
-      if ((second_half == True)):
-        j = 1-j
-      print j, "python"  
-      print 'NAFF for particle %i and for %i turns : %f' %(i+1,len(data), j)
-      tunes.append(j)
-      
-  print time.clock() - t0, "seconds for NAFF"
-  return tunes
+def naff(data_x, data_xp = [0], remove_coupling = False, flag_frequency_interval = False, min_freq = 0, max_freq = 1,second_half =False):
+  zero  = Vec_cpp()
+  coord = Vec_cpp()
+  coord.extend(i for i in data_x)
+  zero.extend(i for i in data_xp)
+  naff = NAFF()
+  naff.set_window_parameter(1, 'h')
+  #naff.set_window_parameter(0, 'n')
+  if (flag_frequency_interval==True):
+    naff.set_frequency_interval(min_freq,max_freq)
+  naff.fmax = 1
+  tune_all=naff.get_f1(coord,zero)
+  print len(data_x), len(data_xp), "here!"
+  for tune in tune_all:
+    if (second_half == True):
+      tune = 1-tune
+  amplitudes = naff.return_amplitudes()
+  #if (remove_coupling == True):
+  #  amplitudes = naff.return_amplitudes()
+  #  for kp in range (len(amplitudes)):
+  #    print amplitudes[kp], tune_all[kp],'python'
+  #  return tune_all, amplitudes
+  #else:
+  #  return tune_all
+  return tune_all, amplitudes
 
-
-#from NAFF import *
-#import numpy as np
-##from multiprocessing import Pool
-##from multiprocessing.dummy import Pool as ThreadPool
-#def naff(data, coord, coord_prime=0, second_half =False):
-#  tunes=[]
-#  n_particles = len(data[0].x)
-#  for i in range (n_particles):
-#    tune=NAFF_f1(coord(data,i),coord_prime(data,i))
-#    #tune=NAFF.get_f1(coord(data,i),coord_prime(data,i))
-#    if (second_half == True):
-#      tune = 1-tune
-#    print 'NAFF for particle %i and for %i turns : %f' %(i+1,len(data), tune)
-#    tunes.append(tune)
-#  return tunes
-
-#def naff(data, coord, coord_prime=0, second_half =False):
-#  tunes=[]
-#  n_particles = len(data[0].x)
-#  for i in range (n_particles):
-#    tune=NAFF_f1(coord(data,i),coord_prime(data,i))
-#    if (second_half == True):
-#      tune = 1-tune
-#    print 'NAFF for particle %i and for %i turns : %f' %(i+1,len(data), tune)
-#    tunes.append(tune)
-#  return tunes
-
+    
 

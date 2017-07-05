@@ -1,7 +1,5 @@
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include <boost/math/tools/minima.hpp>
-#include <boost/math/constants/constants.hpp>
 
 #include "NAFF.h"
 #include "signal.h"
@@ -22,6 +20,8 @@ BOOST_PYTHON_MODULE(NAFF)
         .def("set_merit_function",&NAFF::set_merit_function)
         .def("set_upsampling",&NAFF::set_upsampling)
         .def("set_interpolation",&NAFF::set_interpolation)
+        .def("set_frequency_interval",&NAFF::set_frequency_interval)
+        .def("return_amplitudes",&NAFF::return_amplitudes)
         .def_readwrite("fmax",&NAFF::fmax)
   ;
 

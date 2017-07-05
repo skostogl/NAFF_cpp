@@ -57,4 +57,6 @@ def make_resonance_diagram(order,x_range=[0,1],y_range=[0,1]):
 
   #plt.xlim(x_range)
   #plt.ylim(y_range)
+  plt.xlim(0.24,0.36)
+  plt.ylim(0.26, 0.36)
 

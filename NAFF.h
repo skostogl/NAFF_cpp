@@ -1,7 +1,9 @@
 #pragma once
 
+
 #include <fftw3.h>
 #include <boost/math/tools/minima.hpp>
+#include <boost/math/constants/constants.hpp>
 
 #include "signal.h"
 #include "windows.h"
@@ -18,16 +20,27 @@ class NAFF {
   WindowFunc window;
   fftw_plan fftw_plan_;
   double_vec frequencies;
+  double_vec amplitudes;
   size_t fft_size, f_counter;
   Signal signal, signal_no_upsampling;
   double max_index, fft_frequency = -1;
   std::vector<ComponentVector> norm_vectors;
   std::string merit_func, upsampling_type = "spline";
-  bool f_found = true, flag_upsampling =false, flag_interpolation = false; 
-  
+  bool f_found = true, flag_upsampling =false, flag_interpolation = true;
+  double min_frequency =0;
+  double max_frequency=1.0;
+  double upsampling_factor = 10.0; 
   //////// Initialize signal and window
+  double_vec remove_dc_component(double_vec &data) {
+    double sum  = std::accumulate(data.begin(), data.end(), 0.0);
+    double mean = sum / data.size();
+    std::transform(data.begin(), data.end(), data.begin(), [mean](double x) { return x - mean; });
+    return data;
+  }
   void input(double_vec &init_data_x, double_vec &init_data_xp) {
     size_t new_size;
+    remove_dc_component(init_data_x);
+    remove_dc_component(init_data_xp);
     if (flag_interpolation == true) {
       new_size = multiple_of_six(init_data_x);
       Print_opt::Write(Print_opt::Debug,"----------> Hardy's interpolation used ...");
@@ -40,9 +53,18 @@ class NAFF {
       for (size_t i = 0; i<new_size; i++) { 
         signal_no_upsampling.data.emplace_back(std::complex<double>(init_data_x[i], init_data_xp[i]));
       }
-      for (double i = 1; i<new_size-1; i+=0.1) {
-        signal.data.emplace_back(signal_no_upsampling[i]); 
+      if (upsampling_type == "spline") {
+        for (double i = 1; i<new_size-1; i+=1.0/upsampling_factor) {
+          signal.data.emplace_back(signal_no_upsampling[i]); 
+        }
       }
+      else if (upsampling_type == "linear") {
+        for (double i = 1; i<new_size-1; i+=1.0/upsampling_factor) {
+          signal.data.emplace_back(signal_no_upsampling(i)); 
+        }
+      }
+      else 
+        throw std::runtime_error("Interpolation method not defined! Options are linear or spline ");
       window.compute(signal.size());
     }
     else {
@@ -54,36 +76,34 @@ class NAFF {
   }
   //////// Fast Fourier Transform
   void FFTw () {
-    //std::vector<fftw_complex> fftw_(signal.size());
     std::vector<std::pair<double, double>> fftw_(signal.size());
     fftw_plan_ = fftw_plan_dft_1d(signal.size(), 
                    reinterpret_cast<fftw_complex*>(&signal.data[0]), 
                    reinterpret_cast<fftw_complex*>(fftw_.data()),
                    FFTW_FORWARD, FFTW_ESTIMATE);
-    //fftw_plan_ = fftw_plan_dft_1d(signal.size(), reinterpret_cast< std::pair<double,double>*>(&signal.data[0]), fftw_.data(), FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(fftw_plan_);
     fft_size = fftw_.size();
     max_fft_frequency(fftw_);
   }
   
   //////// First estimation of the peak frequency from FFT 
-  //void max_fft_frequency (std::vector<fftw_complex> &fftw_) {
   void max_fft_frequency (std::vector<std::pair<double,double>> &fftw_) {
     double_vec amps;
-    //double max_amplitude = sqrt(fftw_[0][0]*fftw_[0][0]+fftw_[0][1]*fftw_[0][1]);
+    double_vec all_freqs;
     double max_amplitude = sqrt(fftw_[0].first*fftw_[0].first+fftw_[0].second*fftw_[0].second);
     amps.push_back(max_amplitude);
     max_index = 0.0;
     for (size_t i=1; 2*i<fft_size; i++ ) {
-      //const double current_amplitude = sqrt(fftw_[i][0]*fftw_[i][0]+fftw_[i][1]*fftw_[i][1]);
       const double current_amplitude = sqrt(fftw_[i].first*fftw_[i].first+fftw_[i].second*fftw_[i].second);
       amps.push_back(current_amplitude);
-      if (current_amplitude > max_amplitude) {
+      all_freqs.push_back(((i*1.0)/ (fft_size*1.0-1.0)));
+      if (current_amplitude > max_amplitude && ((i*1.0)/ (fft_size*1.0-1.0))>min_frequency && ((i*1.0)/ (fft_size*1.0-1.0))<max_frequency) {
         max_amplitude = current_amplitude;
 	max_index = i;
       }      
     }
     fft_frequency = ((max_index*1.0)/ (fft_size*1.0-1.0));
+    amplitudes.push_back(max_amplitude);
   }
   
   //////// Maximization of <f(t),exp(i*2*pi*f*t)> function for refined frequency f
@@ -107,7 +127,7 @@ class NAFF {
     auto y = [this](double f) { 
       Component c(f,signal.size());
       return (-abs(inner_product(signal, c, window, flag_interpolation))) ;};
-    double step = 1.0/signal.size();
+    double step = 1.0/(signal.size());
     double min = fft_frequency - 1.0*step;
     double max = fft_frequency + 1.0*step;
     int bits = std::numeric_limits<double>::digits;
@@ -225,22 +245,30 @@ class NAFF {
     merit_func = m;    
   }
   
-  void set_upsampling(const bool flag, const std::string tp) {
+  void set_upsampling(const bool flag, const double ups = 10.0, const std::string tp="spline") {
     flag_upsampling = flag;    
     upsampling_type = tp;
-
+    upsampling_factor = ups;
   }
   
   void set_interpolation(const bool flag) {
     flag_interpolation = flag;    
   }
+
+  void set_frequency_interval(const double& min_freq, const double& max_freq) {
+    min_frequency = min_freq;
+    max_frequency = max_freq;    
+  }
+
+  double_vec return_amplitudes() {
+    return amplitudes;
+  }
   
-  double_vec get_f1 (double_vec &init_data_x,double_vec &init_data_xp) {
+  //double_vec get_f1 (double_vec &init_data_x,double_vec &init_data_xp) {
+  double get_f1 (double_vec &init_data_x,double_vec &init_data_xp) {
     Print_opt::SetLevel(2);
     if (frequencies.size() == 0) {
       input(init_data_x, init_data_xp);
-      for (size_t i=0;i<init_data_x.size();i++) {
-      }
     }
     FFTw();
     if (f_found == true) { 
@@ -256,10 +284,10 @@ class NAFF {
     }
     if (flag_upsampling == true) {
       for (auto& i:frequencies) {
-        i/=0.1;
+        i*=upsampling_factor;
       }
     }
-      return frequencies;
+      return frequencies.back();
   }
   
   double_vec get_f(double_vec &init_data_x, double_vec &init_data_xp) {
@@ -275,7 +303,7 @@ class NAFF {
     f_counter++;    
     }    
     std::string message = "Total number of frequencies found: "+std::to_string(f_counter); 
-    Print_opt::Write(Print_opt::Info, message);
+    Print_opt::Write(Print_opt::Debug, message);
     if (fft_frequency <0) 
       throw std::runtime_error("No frequency found!");
     else 

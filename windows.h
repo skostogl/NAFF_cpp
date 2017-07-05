@@ -12,7 +12,7 @@ class WindowFunc {
   private:
     Signal window;
   public:
-    double parameter = 3.0;
+    double parameter = 1.0;
     char type = 'h';
 
     WindowFunc(): window() {}

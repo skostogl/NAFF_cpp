@@ -37,7 +37,11 @@ include_directories(
 )
 LINK_LIBRARIES(${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${FFTW3_LIBRARIES})
 
-add_library(NAFF SHARED interface_NAFF.cpp ${SOURCE_FILES} ${HEADER_FILES})
+## Uncomment to create NAFF.so and import to python
+#add_library(NAFF SHARED interface_NAFF.cpp ${SOURCE_FILES} ${HEADER_FILES})
+
+
+add_executable (NAFF main_NAFF.cpp ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(NAFF 
 	${Boost_LIBRARIES} 
 	${PYTHON_LIBRARIES} 
