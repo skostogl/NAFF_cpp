@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7.2)
+cmake_minimum_required(VERSION 2.2.2)
 project(NAFF)
 
 add_compile_options(-std=c++11 -O3 -Wall -Wextra -pedantic)
@@ -38,10 +38,10 @@ include_directories(
 LINK_LIBRARIES(${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${FFTW3_LIBRARIES})
 
 ## Uncomment to create NAFF.so and import to python
-#add_library(NAFF SHARED interface_NAFF.cpp ${SOURCE_FILES} ${HEADER_FILES})
+add_library(NAFF SHARED interface_NAFF.cpp ${SOURCE_FILES} ${HEADER_FILES})
 
 
-add_executable (NAFF main_NAFF.cpp ${SOURCE_FILES} ${HEADER_FILES})
+#add_executable (NAFF main_NAFF.cpp ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(NAFF 
 	${Boost_LIBRARIES} 
 	${PYTHON_LIBRARIES} 

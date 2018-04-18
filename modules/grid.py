@@ -62,17 +62,17 @@ def create_plot(data_x, data_y,index_list=0, diff_tunes=0, colorbar=False,resona
   return fig, ax
 
 
-def cmp_grid(sigma_x_init, sigma_x_final, sigma_y_init, sigma_y_final, step,lattice): 
-  n_particles_x =  int(round((sigma_x_final-sigma_x_init )/(step*lattice.sigma_x())))
-  print sigma_y_init, lattice.sigma_y(), sigma_y_init/lattice.sigma_y()
-  if (sigma_x_init+n_particles_x*step*lattice.sigma_x()+step*lattice.sigma_x()<sigma_x_final):
+def cmp_grid(sigma_x_init, sigma_x_final, sigma_y_init, sigma_y_final, step,sigma_x, sigma_y, bunch): 
+  n_particles_x =  int(round((sigma_x_final-sigma_x_init )/(step*sigma_x)))
+  print sigma_y_init, sigma_y, sigma_y_init/sigma_y
+  if (sigma_x_init+n_particles_x*step*sigma_x+step*sigma_x<sigma_x_final):
       n_particles_x=n_particles_x+1
   #n_particles_x =  int(round((sigma_x_final)/(step*sigma_x_init)))
   #n_particles_x = int (round(sigma_x_final/(sigma_x_init*step)))
   n_particles_y=n_particles_x
 
   n_particles   = int (n_particles_x * n_particles_y)
-  b = HostBunch(n_particles)
+  b = bunch
   particle = 0
   #for i in range (1,n_particles_x+1):
   #  for j in range (1,n_particles_y+1):
@@ -80,31 +80,31 @@ def cmp_grid(sigma_x_init, sigma_x_final, sigma_y_init, sigma_y_final, step,latt
     for j in range (n_particles_y):
       #b.x [particle] =  i*step*sigma_x_init
       #b.y [particle] =  j*step*sigma_y_init
-      b.x [particle] = sigma_x_init+ i*step*lattice.sigma_x()
-      b.y [particle] = sigma_y_init+ j*step*lattice.sigma_y()
+      b.x [particle] = sigma_x_init+ i*step*sigma_x
+      b.y [particle] = sigma_y_init+ j*step*sigma_y
       if ((j==0) and (i==0)):
-          print b.x[particle]/lattice.sigma_x(), b.y[particle]/lattice.sigma_y(), lattice.sigma_x(), lattice.sigma_y(), sigma_x_init/lattice.sigma_x(), sigma_y_init/lattice.sigma_y()
+          print b.x[particle]/sigma_x, b.y[particle]/sigma_y, sigma_x, sigma_y, sigma_x_init/sigma_x, sigma_y_init/sigma_y
       particle = particle + 1
   segment_indexes=cmp_index_segment(n_particles_x, n_particles_y)
   return b, segment_indexes
 
-def cmp_polar_grid(sigma_x_init, sigma_x_final, sigma_y_init, sigma_y_final, step,lattice): 
-  n_particles_x =  int(round((sigma_x_final-sigma_x_init)/(step*lattice.sigma_x())))
+def cmp_polar_grid(sigma_x_init, sigma_x_final, sigma_y_init, sigma_y_final, step,bunch): 
+  n_particles_x =  int(round((sigma_x_final-sigma_x_init)/(step*sigma_x)))
   print n_particles_x
-  if (sigma_x_init+n_particles_x*step*lattice.sigma_x()+step*lattice.sigma_x()<=sigma_x_final):
+  if (sigma_x_init+n_particles_x*step*sigma_x+step*bunch.sigma_x()<=sigma_x_final):
       n_particles_x=n_particles_x+1
   #n_particles_y=n_particles_x
-  n_particles_y =  int(round((sigma_y_final-sigma_y_init)/(step*lattice.sigma_y())))
+  n_particles_y =  int(round((sigma_y_final-sigma_y_init)/(step*sigma_y)))
 
   n_particles   = int (n_particles_x * n_particles_y)
   b = HostBunch(n_particles)
   particle_count = 0
   
   r_a = sigma_x_init
-  r_b = sigma_x_init+ n_particles_x*step*lattice.sigma_x()
+  r_b = sigma_x_init+ n_particles_x*step*sigma_x
 
   r_a2 = sigma_y_init
-  r_b2 = sigma_y_init+ n_particles_y*step*lattice.sigma_y()
+  r_b2 = sigma_y_init+ n_particles_y*step*sigma_y
   
   circles = n_particles_x
   lines   = n_particles_x
